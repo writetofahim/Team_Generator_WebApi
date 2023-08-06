@@ -1,6 +1,6 @@
 const Player = require("../models/Player");
 
-//Create player
+// Create player
 const createPlayer = async (req, res) => {
   try {
     const { name, position, playerSkills } = req.body;
@@ -15,21 +15,28 @@ const createPlayer = async (req, res) => {
     if (!validPositions.includes(position)) {
       return res
         .status(400)
-        .json({ message: `Invalid value for position: ${position}` });
+        .json({
+          message: `Invalid value for position: ${position}`,
+          field: "position",
+        });
     }
 
     // Validate player skills
     const validSkills = ["defense", "attack", "speed", "strength", "stamina"];
     if (!Array.isArray(playerSkills) || playerSkills.length === 0) {
       return res.status(400).json({
-        message: `At least one value is required for the player`,
+        message: "At least one value is required for the player",
+        field: "playerSkills",
       });
     }
     for (const skill of playerSkills) {
       if (!validSkills.includes(skill.skill)) {
         return res
           .status(400)
-          .json({ message: `Invalid value for skill: ${skill.skill}` });
+          .json({
+            message: `Invalid value for skill: ${skill.skill}`,
+            field: "skill",
+          });
       }
     }
 
