@@ -3,7 +3,6 @@ const Player = require("../models/Player");
 //Create player
 const createPlayer = async (req, res) => {
   try {
-    console.log(req.body);
     const { name, position, playerSkills } = req.body;
     const newPlayer = new Player({
       name,
@@ -21,6 +20,11 @@ const createPlayer = async (req, res) => {
 
     // Validate player skills
     const validSkills = ["defense", "attack", "speed", "strength", "stamina"];
+    if (!Array.isArray(playerSkills) || playerSkills.length === 0) {
+      return res.status(400).json({
+        message: `At least one value is required for the player`,
+      });
+    }
     for (const skill of playerSkills) {
       if (!validSkills.includes(skill.skill)) {
         return res
@@ -35,14 +39,12 @@ const createPlayer = async (req, res) => {
       newPlayer,
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Check your connection and try again",
     });
   }
 };
-
 //Update player
 const updatePlayer = async (req, res) => {
   try {
@@ -92,7 +94,7 @@ const updatePlayer = async (req, res) => {
     });
   }
 };
-
+// Delete Player
 const deletePlayer = async (req, res) => {
   const { playerId } = req.params;
   try {
@@ -112,7 +114,7 @@ const deletePlayer = async (req, res) => {
     });
   }
 };
-
+// List of All players
 const listOfPlayers = async (req, res) => {
   try {
     const players = await Player.find();
@@ -127,6 +129,7 @@ const listOfPlayers = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   createPlayer,
   updatePlayer,
