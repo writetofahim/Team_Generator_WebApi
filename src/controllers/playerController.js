@@ -59,27 +59,25 @@ const updatePlayer = async (req, res) => {
     // Validate position
     const validPositions = ["defender", "midfielder", "forward"];
     if (!validPositions.includes(position)) {
-      return res
-        .status(400)
-        .json({ message: `Invalid value for position: ${position}` });
+      return res.status(400).json({
+        message: `Invalid value for position: ${position}`,
+        field: "position",
+      });
     }
 
     // Validate player skills
     const validSkills = ["defense", "attack", "speed", "strength", "stamina"];
-    for (const skill of playerSkills) {
-      if (!validSkills.includes(skill.skill)) {
-        return res
-          .status(400)
-          .json({ message: `Invalid value for skill: ${skill.skill}` });
-      }
+    if (!Array.isArray(playerSkills) || playerSkills.length === 0) {
+      return res.status(400).json({
+        message: "At least one value is required for the player",
+        field: "playerSkills",
+      });
     }
     // Find the player by ID and update its data
     const updatedPlayer = await Player.findByIdAndUpdate(
       playerId,
       { name, position, playerSkills },
-      {
-        new: true, // Return the updated player instead of the original one
-      }
+      { new: true } // Return the updated player instead of the original one
     );
 
     // If the player is not found, return 404 status
@@ -88,17 +86,21 @@ const updatePlayer = async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Player updated successfully",
+      success: true,
+      message: "Player updated successfully.",
       updatedPlayer,
     });
   } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error updating player:", error);
+
     res.status(500).json({
       success: false,
-      message: "Check your connection and try again",
-      error: error.message,
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
+
 // Delete Player
 const deletePlayer = async (req, res) => {
   const { playerId } = req.params;
