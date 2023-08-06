@@ -6,6 +6,24 @@ const teamSelection = async (req, res) => {
   try {
     for (const requirement of teamRequirements) {
       const { position, mainSkill, numberOfPlayers } = requirement;
+
+      // Validate position
+      const validPositions = ["defender", "midfielder", "forward"];
+      if (!validPositions.includes(position)) {
+        return res.status(400).json({
+          message: `Invalid value for position: ${position}`,
+          field: "position",
+        });
+      }
+
+      // Validate player skills
+      const validSkills = ["defense", "attack", "speed", "strength", "stamina"];
+      if (!validSkills.includes(mainSkill)) {
+        return res.status(400).json({
+          message: "At least one value is required for the player",
+          field: "mainSkill",
+        });
+      }
       let filteredPlayers = await Player.find({
         position: position,
         "playerSkills.skill": mainSkill,
@@ -17,25 +35,27 @@ const teamSelection = async (req, res) => {
           .sort({ "playerSkills.value": -1 })
           .limit(numberOfPlayers);
       }
-      //   return res.status(200).json({
-      //     filteredPlayers,
-      //   });
 
-      //   If required number of players is not available
-      if (filteredPlayers.length < numberOfPlayers)
-        return res.status(200).json({
+      // If required number of players is not available
+      if (filteredPlayers.length < numberOfPlayers) {
+        return res.status(400).json({
           message: `Insufficient number of players for position: ${position}`,
         });
+      }
+
       selectedPlayers.push(...filteredPlayers);
     }
+
     res.status(200).json({
       selectedPlayers,
     });
-    // console.log(selectedPlayers);
   } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error during team selection:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Check your connection and try again",
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
