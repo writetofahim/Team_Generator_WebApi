@@ -131,9 +131,12 @@ const listOfPlayers = async (req, res) => {
       players,
     });
   } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error fetching list of players:", error);
+
     return res.status(500).json({
       success: false,
-      message: "Check your connection and try again",
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
