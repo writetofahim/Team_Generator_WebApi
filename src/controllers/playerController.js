@@ -13,12 +13,10 @@ const createPlayer = async (req, res) => {
     // Validate position
     const validPositions = ["defender", "midfielder", "forward"];
     if (!validPositions.includes(position)) {
-      return res
-        .status(400)
-        .json({
-          message: `Invalid value for position: ${position}`,
-          field: "position",
-        });
+      return res.status(400).json({
+        message: `Invalid value for position: ${position}`,
+        field: "position",
+      });
     }
 
     // Validate player skills
@@ -31,12 +29,10 @@ const createPlayer = async (req, res) => {
     }
     for (const skill of playerSkills) {
       if (!validSkills.includes(skill.skill)) {
-        return res
-          .status(400)
-          .json({
-            message: `Invalid value for skill: ${skill.skill}`,
-            field: "skill",
-          });
+        return res.status(400).json({
+          message: `Invalid value for skill: ${skill.skill}`,
+          field: "skill",
+        });
       }
     }
 
@@ -46,9 +42,11 @@ const createPlayer = async (req, res) => {
       newPlayer,
     });
   } catch (error) {
-    return res.status(500).json({
+    console.error("Error creating player:", error);
+
+    res.status(500).json({
       success: false,
-      message: "Check your connection and try again",
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
@@ -114,10 +112,11 @@ const deletePlayer = async (req, res) => {
       message: "Player deleted successfully",
     });
   } catch (error) {
+    console.error("Error deleting player:", error);
+
     res.status(500).json({
       success: false,
-      message: "Check your connection and try again",
-      error: error.message,
+      message: "Something went wrong. Please try again later.",
     });
   }
 };
